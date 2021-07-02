@@ -18,7 +18,6 @@ let video;
 let predictions = [];
 const scaleFactorX = width / 640;
 const scaleFactorY = height / 480;
-const scaleFactorCircle = width / 640;
 
 let cameraOptions = {
 	video: {
@@ -70,21 +69,39 @@ function draw() {
 // A function to draw ellipses over the detected keypoints
 function drawKeypoints() {
 
-	let n = 25 * scaleFactorX;
 	let col = color("#ff3a41");
 	for (let i = 0; i < predictions.length; i += 1) {
 		const keypoints = predictions[i].scaledMesh;
+		const boundingBox = predictions[i].boundingBox;
+		//boundingBox
+		let topX = boundingBox.topLeft[0][0];
+		let topY = boundingBox.topLeft[0][1];
+		let bottomX = boundingBox.bottomRight[0][0];
+		let bottomY = boundingBox.bottomRight[0][1];
+		// let [bottomX, bottomY] = boundingBox[1];
+
+		// //drawBox
+		// strokeWeight(2);
+		// stroke(0,0,255);
+		// rect(topX*scaleFactorX, topY*scaleFactorY, (bottomX-topX)*scaleFactorX, (bottomY-topY)*scaleFactorY);
+		
+		//featurePoints
 		let newLX = keypoints[427][0];
 		let newLY = keypoints[427][1];
 		let newRX = keypoints[207][0];
 		let newRY = keypoints[207][1];
 
 		//Lerp to calculate the transition when moving head around
-		leftX = lerp(leftX, newLX, 0.2);
-		leftY = lerp(leftY, newLY, 0.2);
-		rightX = lerp(rightX, newRX, 1);
-		rightY = lerp(rightY, newRY, 0.2);
-		// console.log(keypoints[207], keypoints[427]);
+		// leftX = lerp(leftX, newLX, 0.2);
+		// leftY = lerp(leftY, newLY, 0.2);
+		// rightX = lerp(rightX, newRX, 1);
+		// rightY = lerp(rightY, newRY, 0.2);
+
+		//circle scaleFactor
+		let scaleFactorCircle = width / (bottomX-topX);
+		console.log(scaleFactorCircle)
+		let n = width*0.65/scaleFactorCircle;
+		//can add a lerp as well
 
 		//draw shape based on desired points
 		// fill(255, 0, 0);
@@ -99,8 +116,8 @@ function drawKeypoints() {
 			noStroke();
 			//strokeWeight(1);
 			//stroke(255);
-			circle(leftX * scaleFactorX, leftY * scaleFactorY, a);
-			circle(rightX * scaleFactorX, rightY * scaleFactorY, a);
+			circle(newLX * scaleFactorX, newLY * scaleFactorY, a);
+			circle(newRX * scaleFactorX, newRY * scaleFactorY, a);
 		}
 		// Draw all facial keypoints.
 		//     for (let j = 0; j < keypoints.length; j += 1) {
